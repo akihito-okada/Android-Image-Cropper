@@ -138,6 +138,16 @@ public final class CropImage {
         getPickImageChooserIntent(activity), PICK_IMAGE_CHOOSER_REQUEST_CODE);
   }
 
+  public static void startTakePictureActivity(@NonNull Activity activity) {
+    activity.startActivityForResult(
+            getCameraIntent(activity, null), PICK_IMAGE_CHOOSER_REQUEST_CODE);
+  }
+
+  public static void startOpenGalleryActivity(@NonNull Activity activity) {
+    activity.startActivityForResult(
+            getGalleryIntent(), PICK_IMAGE_CHOOSER_REQUEST_CODE);
+  }
+
   /**
    * Same as {@link #startPickImageActivity(Activity) startPickImageActivity} method but instead of
    * being called and returning to an Activity, this method can be called and return to a Fragment.
@@ -213,6 +223,13 @@ public final class CropImage {
         Intent.EXTRA_INITIAL_INTENTS, allIntents.toArray(new Parcelable[allIntents.size()]));
 
     return chooserIntent;
+  }
+
+  public static Intent getGalleryIntent() {
+    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+    intent.addCategory(Intent.CATEGORY_OPENABLE);
+    intent.setType("image/*");
+    return intent;
   }
 
   /**

@@ -22,10 +22,6 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,6 +29,11 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 /**
  * Built-in activity for image cropping.<br>
@@ -71,7 +72,7 @@ public class CropImageActivity extends AppCompatActivity
               new String[] {Manifest.permission.CAMERA},
               CropImage.CAMERA_CAPTURE_PERMISSIONS_REQUEST_CODE);
         } else {
-          CropImage.startPickImageActivity(this);
+          startCropImageActivity();
         }
       } else if (CropImage.isReadExternalStoragePermissionsRequired(this, mCropImageUri)) {
         // request permissions and handle the result in onRequestPermissionsResult()
@@ -198,7 +199,12 @@ public class CropImageActivity extends AppCompatActivity
       }
 
       if (resultCode == Activity.RESULT_OK) {
-        mCropImageUri = CropImage.getPickImageResultUri(this, data);
+        IntentType intentType = IntentType.fromOrdinal(mOptions.intentTypeOrdinal);
+        if (intentType == IntentType.TakePicture) {
+          mCropImageUri = CropImage.getOutPutFileUriForCamera(this);
+        } else {
+          mCropImageUri = CropImage.getPickImageResultUri(this, data);
+        }
 
         // For API >= 23 we need to check specifically that we have permissions to read external
         // storage.
@@ -233,7 +239,21 @@ public class CropImageActivity extends AppCompatActivity
     if (requestCode == CropImage.CAMERA_CAPTURE_PERMISSIONS_REQUEST_CODE) {
       // Irrespective of whether camera permission was given or not, we show the picker
       // The picker will not add the camera intent if permission is not available
-      CropImage.startPickImageActivity(this);
+      startCropImageActivity();
+    }
+  }
+
+  private void startCropImageActivity() {
+    IntentType intentType = IntentType.fromOrdinal(mOptions.intentTypeOrdinal);
+    switch (intentType) {
+      case PickImage:
+        CropImage.startPickImageActivity(this);
+        return;
+      case OpenGallery:
+        CropImage.startOpenGalleryActivity(this);
+        return;
+      case TakePicture:
+        CropImage.startTakePictureActivity(this);
     }
   }
 

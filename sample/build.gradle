@@ -5,6 +5,7 @@ android {
     buildToolsVersion rootProject.buildToolsVersion
 
     defaultConfig {
+        applicationId 'com.theartofdev.edmodo.cropper'
         minSdkVersion 14
         targetSdkVersion rootProject.compileSdkVersion
         versionCode 1

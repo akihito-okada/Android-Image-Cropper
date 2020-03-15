@@ -18,10 +18,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.fragment.app.FragmentManager;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,6 +29,11 @@ import android.widget.Toast;
 import com.example.croppersample.R;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
+
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentManager;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -111,7 +112,8 @@ public class MainActivity extends AppCompatActivity {
 
     if (requestCode == CropImage.PICK_IMAGE_CHOOSER_REQUEST_CODE
         && resultCode == AppCompatActivity.RESULT_OK) {
-      Uri imageUri = CropImage.getPickImageResultUri(this, data);
+      // Uri imageUri = CropImage.getPickImageResultUri(this, data);
+      Uri imageUri = CropImage.getOutPutFileUriForCamera(this);
 
       // For API >= 23 we need to check specifically that we have permissions to read external
       // storage,
@@ -138,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
       int requestCode, String permissions[], int[] grantResults) {
     if (requestCode == CropImage.CAMERA_CAPTURE_PERMISSIONS_REQUEST_CODE) {
       if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-        CropImage.startPickImageActivity(this);
+        CropImage.startTakePictureActivity(this);
       } else {
         Toast.makeText(this, "Cancelling, required permissions are not granted", Toast.LENGTH_LONG)
             .show();
@@ -165,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
               new String[] {Manifest.permission.CAMERA},
               CropImage.CAMERA_CAPTURE_PERMISSIONS_REQUEST_CODE);
         } else {
-          CropImage.startPickImageActivity(this);
+          CropImage.startTakePictureActivity(this);
         }
         mDrawerLayout.closeDrawers();
         break;
@@ -284,58 +286,58 @@ public class MainActivity extends AppCompatActivity {
   private void setMainFragmentByPreset(CropDemoPreset demoPreset) {
     FragmentManager fragmentManager = getSupportFragmentManager();
     fragmentManager
-        .beginTransaction()
-        .replace(R.id.container, MainFragment.newInstance(demoPreset))
-        .commit();
+            .beginTransaction()
+            .replace(R.id.container, MainFragment.newInstance(demoPreset))
+            .commit();
   }
 
   private void updateDrawerTogglesByOptions(CropImageViewOptions options) {
     ((TextView) findViewById(R.id.drawer_option_toggle_scale))
-        .setText(
-            getResources()
-                .getString(R.string.drawer_option_toggle_scale, options.scaleType.name()));
+            .setText(
+                    getResources()
+                            .getString(R.string.drawer_option_toggle_scale, options.scaleType.name()));
     ((TextView) findViewById(R.id.drawer_option_toggle_shape))
-        .setText(
-            getResources()
-                .getString(R.string.drawer_option_toggle_shape, options.cropShape.name()));
+            .setText(
+                    getResources()
+                            .getString(R.string.drawer_option_toggle_shape, options.cropShape.name()));
     ((TextView) findViewById(R.id.drawer_option_toggle_guidelines))
-        .setText(
-            getResources()
-                .getString(R.string.drawer_option_toggle_guidelines, options.guidelines.name()));
+            .setText(
+                    getResources()
+                            .getString(R.string.drawer_option_toggle_guidelines, options.guidelines.name()));
     ((TextView) findViewById(R.id.drawer_option_toggle_multitouch))
-        .setText(
-            getResources()
-                .getString(
-                    R.string.drawer_option_toggle_multitouch,
-                    Boolean.toString(options.multitouch)));
+            .setText(
+                    getResources()
+                            .getString(
+                                    R.string.drawer_option_toggle_multitouch,
+                                    Boolean.toString(options.multitouch)));
     ((TextView) findViewById(R.id.drawer_option_toggle_show_overlay))
-        .setText(
-            getResources()
-                .getString(
-                    R.string.drawer_option_toggle_show_overlay,
-                    Boolean.toString(options.showCropOverlay)));
+            .setText(
+                    getResources()
+                            .getString(
+                                    R.string.drawer_option_toggle_show_overlay,
+                                    Boolean.toString(options.showCropOverlay)));
     ((TextView) findViewById(R.id.drawer_option_toggle_show_progress_bar))
-        .setText(
-            getResources()
-                .getString(
-                    R.string.drawer_option_toggle_show_progress_bar,
-                    Boolean.toString(options.showProgressBar)));
+            .setText(
+                    getResources()
+                            .getString(
+                                    R.string.drawer_option_toggle_show_progress_bar,
+                                    Boolean.toString(options.showProgressBar)));
 
     String aspectRatio = "FREE";
     if (options.fixAspectRatio) {
       aspectRatio = options.aspectRatio.first + ":" + options.aspectRatio.second;
     }
     ((TextView) findViewById(R.id.drawer_option_toggle_aspect_ratio))
-        .setText(getResources().getString(R.string.drawer_option_toggle_aspect_ratio, aspectRatio));
+            .setText(getResources().getString(R.string.drawer_option_toggle_aspect_ratio, aspectRatio));
 
     ((TextView) findViewById(R.id.drawer_option_toggle_auto_zoom))
-        .setText(
-            getResources()
-                .getString(
-                    R.string.drawer_option_toggle_auto_zoom,
-                    options.autoZoomEnabled ? "Enabled" : "Disabled"));
+            .setText(
+                    getResources()
+                            .getString(
+                                    R.string.drawer_option_toggle_auto_zoom,
+                                    options.autoZoomEnabled ? "Enabled" : "Disabled"));
     ((TextView) findViewById(R.id.drawer_option_toggle_max_zoom))
-        .setText(
-            getResources().getString(R.string.drawer_option_toggle_max_zoom, options.maxZoomLevel));
+            .setText(
+                    getResources().getString(R.string.drawer_option_toggle_max_zoom, options.maxZoomLevel));
   }
 }

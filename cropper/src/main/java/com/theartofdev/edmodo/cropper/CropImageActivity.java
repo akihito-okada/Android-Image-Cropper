@@ -15,7 +15,6 @@ package com.theartofdev.edmodo.cropper;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -35,7 +34,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
 
 /**
  * Built-in activity for image cropping.<br>
@@ -203,8 +201,9 @@ public class CropImageActivity extends AppCompatActivity
       }
 
       if (resultCode == Activity.RESULT_OK) {
-        if (mCameraImageUri != null) {
-          mCropImageUri = mCameraImageUri;
+        IntentType intentType = IntentType.fromOrdinal(mOptions.intentTypeOrdinal);
+        if (intentType == IntentType.TakePicture) {
+          mCropImageUri = CropImage.getOutPutFileUri(this);
         } else {
           mCropImageUri = CropImage.getPickImageResultUri(this, data);
         }
@@ -256,7 +255,6 @@ public class CropImageActivity extends AppCompatActivity
         CropImage.startOpenGalleryActivity(this);
         return;
       case TakePicture:
-        mCameraImageUri = getOutPutFileUri(this);
         CropImage.startTakePictureActivity(this, mCameraImageUri);
     }
   }
@@ -369,27 +367,6 @@ public class CropImageActivity extends AppCompatActivity
         }
       }
     }
-  }
-
-  private static File createOutputFileIfNeeded(Context context, String outputFileName) {
-    File outputFile = new File(context.getFilesDir(), String.format("images/%s", outputFileName));
-    if (!outputFile.exists()) {
-      try {
-        //noinspection ResultOfMethodCallIgnored,ConstantConditions
-        outputFile.getParentFile().mkdirs();
-        //noinspection ResultOfMethodCallIgnored
-        outputFile.createNewFile();
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    }
-    return outputFile;
-  }
-
-  private Uri getOutPutFileUri(Context context) {
-    String outputFileName = "cameraImage.jpeg";
-    File outPutFile = createOutputFileIfNeeded(this, outputFileName);
-    return FileProvider.getUriForFile(this, String.format("%s.provider", context.getPackageName()), outPutFile);
   }
   // endregion
 }

@@ -44,6 +44,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
 /**
@@ -140,7 +141,7 @@ public final class CropImage {
 
   public static void startTakePictureActivity(@NonNull Activity activity, Uri outputFileUri) {
     activity.startActivityForResult(
-            getCameraIntent(activity, outputFileUri), PICK_IMAGE_CHOOSER_REQUEST_CODE);
+            getCameraIntent(activity, getOutPutFileUri(activity)), PICK_IMAGE_CHOOSER_REQUEST_CODE);
   }
 
   public static void startOpenGalleryActivity(@NonNull Activity activity) {
@@ -230,6 +231,27 @@ public final class CropImage {
     intent.addCategory(Intent.CATEGORY_OPENABLE);
     intent.setType("image/*");
     return intent;
+  }
+
+  private static File createOutputFileIfNeeded(Context context, String outputFileName) {
+    File outputFile = new File(context.getFilesDir(), String.format("images/%s", outputFileName));
+    if (!outputFile.exists()) {
+      try {
+        //noinspection ResultOfMethodCallIgnored,ConstantConditions
+        outputFile.getParentFile().mkdirs();
+        //noinspection ResultOfMethodCallIgnored
+        outputFile.createNewFile();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+    return outputFile;
+  }
+
+  public static Uri getOutPutFileUri(Context context) {
+    String outputFileName = "cameraImage.jpeg";
+    File outPutFile = createOutputFileIfNeeded(context, outputFileName);
+    return FileProvider.getUriForFile(context, String.format("%s.provider", context.getPackageName()), outPutFile);
   }
 
   /**

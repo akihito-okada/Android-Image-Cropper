@@ -139,9 +139,9 @@ public final class CropImage {
             getPickImageChooserIntent(activity), PICK_IMAGE_CHOOSER_REQUEST_CODE);
   }
 
-  public static void startTakePictureActivity(@NonNull Activity activity, Uri outputFileUri) {
+  public static void startTakePictureActivity(@NonNull Activity activity) {
     activity.startActivityForResult(
-            getCameraIntent(activity, getOutPutFileUri(activity)), PICK_IMAGE_CHOOSER_REQUEST_CODE);
+            getCameraIntent(activity, getOutPutFileUriForCamera(activity)), PICK_IMAGE_CHOOSER_REQUEST_CODE);
   }
 
   public static void startOpenGalleryActivity(@NonNull Activity activity) {
@@ -248,7 +248,7 @@ public final class CropImage {
     return outputFile;
   }
 
-  public static Uri getOutPutFileUri(Context context) {
+  public static Uri getOutPutFileUriForCamera(Context context) {
     String outputFileName = "cameraImage.jpeg";
     File outPutFile = createOutputFileIfNeeded(context, outputFileName);
     return FileProvider.getUriForFile(context, String.format("%s.provider", context.getPackageName()), outPutFile);

@@ -52,8 +52,6 @@ public class CropImageActivity extends AppCompatActivity
   /** the options that were set for the crop image */
   private CropImageOptions mOptions;
 
-  private Uri mCameraImageUri;
-
   @Override
   @SuppressLint("NewApi")
   public void onCreate(Bundle savedInstanceState) {
@@ -203,7 +201,7 @@ public class CropImageActivity extends AppCompatActivity
       if (resultCode == Activity.RESULT_OK) {
         IntentType intentType = IntentType.fromOrdinal(mOptions.intentTypeOrdinal);
         if (intentType == IntentType.TakePicture) {
-          mCropImageUri = CropImage.getOutPutFileUri(this);
+          mCropImageUri = CropImage.getOutPutFileUriForCamera(this);
         } else {
           mCropImageUri = CropImage.getPickImageResultUri(this, data);
         }
@@ -255,7 +253,7 @@ public class CropImageActivity extends AppCompatActivity
         CropImage.startOpenGalleryActivity(this);
         return;
       case TakePicture:
-        CropImage.startTakePictureActivity(this, mCameraImageUri);
+        CropImage.startTakePictureActivity(this);
     }
   }
 

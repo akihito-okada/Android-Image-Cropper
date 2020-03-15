@@ -52,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
   private MainFragment mCurrentFragment;
 
   private Uri mCropImageUri;
-  private Uri mCameraImageUri;
 
   private CropImageViewOptions mCropImageViewOptions = new CropImageViewOptions();
   // endregion
@@ -119,7 +118,8 @@ public class MainActivity extends AppCompatActivity {
 
     if (requestCode == CropImage.PICK_IMAGE_CHOOSER_REQUEST_CODE
         && resultCode == AppCompatActivity.RESULT_OK) {
-      Uri imageUri = CropImage.getPickImageResultUri(this, data);
+      // Uri imageUri = CropImage.getPickImageResultUri(this, data);
+      Uri imageUri = CropImage.getOutPutFileUriForCamera(this);
 
       // For API >= 23 we need to check specifically that we have permissions to read external
       // storage,
@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
             CropImage.PICK_IMAGE_PERMISSIONS_REQUEST_CODE);
       } else {
 
-        mCurrentFragment.setImageUri(mCameraImageUri);
+        mCurrentFragment.setImageUri(imageUri);
       }
     }
   }
@@ -146,8 +146,7 @@ public class MainActivity extends AppCompatActivity {
       int requestCode, String permissions[], int[] grantResults) {
     if (requestCode == CropImage.CAMERA_CAPTURE_PERMISSIONS_REQUEST_CODE) {
       if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-        mCameraImageUri = getOutPutFileUri(this);
-        CropImage.startTakePictureActivity(this, mCameraImageUri);
+        CropImage.startTakePictureActivity(this);
       } else {
         Toast.makeText(this, "Cancelling, required permissions are not granted", Toast.LENGTH_LONG)
             .show();
@@ -232,8 +231,7 @@ public class MainActivity extends AppCompatActivity {
               new String[] {Manifest.permission.CAMERA},
               CropImage.CAMERA_CAPTURE_PERMISSIONS_REQUEST_CODE);
         } else {
-          mCameraImageUri = getOutPutFileUri(this);
-          CropImage.startTakePictureActivity(this, mCameraImageUri);
+          CropImage.startTakePictureActivity(this);
         }
         mDrawerLayout.closeDrawers();
         break;

@@ -14,12 +14,10 @@ package com.theartofdev.edmodo.cropper.sample;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,15 +27,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.croppersample.R;
-import com.theartofdev.edmodo.cropper.BuildConfig;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
-import java.io.File;
-
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 
@@ -345,26 +339,5 @@ public class MainActivity extends AppCompatActivity {
       default:
         Toast.makeText(this, "Unknown drawer option clicked", Toast.LENGTH_LONG).show();
     }
-  }
-
-  private static File createOutputFileIfNeeded(Context context, String outputFileName) {
-    File outputFile = new File(context.getFilesDir(), String.format("images/%s", outputFileName));
-    if (!outputFile.exists()) {
-      try {
-        //noinspection ResultOfMethodCallIgnored,ConstantConditions
-        outputFile.getParentFile().mkdirs();
-        //noinspection ResultOfMethodCallIgnored
-        outputFile.createNewFile();
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    }
-    return outputFile;
-  }
-
-  private Uri getOutPutFileUri(Context context) {
-    String outputFileName = SystemClock.currentThreadTimeMillis() + ".jpeg";
-    File outPutFile = createOutputFileIfNeeded(this, outputFileName);
-    return FileProvider.getUriForFile(this, String.format("%s.provider", BuildConfig.APPLICATION_ID), outPutFile);
   }
 }

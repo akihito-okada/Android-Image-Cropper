@@ -135,12 +135,12 @@ public final class CropImage {
    */
   public static void startPickImageActivity(@NonNull Activity activity) {
     activity.startActivityForResult(
-        getPickImageChooserIntent(activity), PICK_IMAGE_CHOOSER_REQUEST_CODE);
+            getPickImageChooserIntent(activity), PICK_IMAGE_CHOOSER_REQUEST_CODE);
   }
 
-  public static void startTakePictureActivity(@NonNull Activity activity) {
+  public static void startTakePictureActivity(@NonNull Activity activity, Uri outputFileUri) {
     activity.startActivityForResult(
-            getCameraIntent(activity, null), PICK_IMAGE_CHOOSER_REQUEST_CODE);
+            getCameraIntent(activity, outputFileUri), PICK_IMAGE_CHOOSER_REQUEST_CODE);
   }
 
   public static void startOpenGalleryActivity(@NonNull Activity activity) {
@@ -361,6 +361,15 @@ public final class CropImage {
     File getImage = context.getExternalCacheDir();
     if (getImage != null) {
       outputFileUri = Uri.fromFile(new File(getImage.getPath(), "pickImageResult.jpeg"));
+    }
+    return outputFileUri;
+  }
+
+  public static Uri getCaptureImageOutputUri(@NonNull Context context, String fileName) {
+    Uri outputFileUri = null;
+    File getImage = context.getExternalCacheDir();
+    if (getImage != null) {
+      outputFileUri = Uri.fromFile(new File(getImage.getPath(), fileName));
     }
     return outputFileUri;
   }
@@ -955,6 +964,11 @@ public final class CropImage {
      */
     public ActivityBuilder setCropMenuCropButtonIcon(@DrawableRes int drawableResource) {
       mOptions.cropMenuCropButtonIcon = drawableResource;
+      return this;
+    }
+
+    public ActivityBuilder setIntentType(IntentType intentType) {
+      mOptions.intentTypeOrdinal = intentType.ordinal();
       return this;
     }
   }

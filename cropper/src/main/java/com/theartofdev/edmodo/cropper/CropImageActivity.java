@@ -15,6 +15,7 @@ package com.theartofdev.edmodo.cropper;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -22,10 +23,6 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,6 +30,12 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
 /**
  * Built-in activity for image cropping.<br>
@@ -50,6 +53,8 @@ public class CropImageActivity extends AppCompatActivity
 
   /** the options that were set for the crop image */
   private CropImageOptions mOptions;
+
+  private Uri mCameraImageUri;
 
   @Override
   @SuppressLint("NewApi")
@@ -71,7 +76,7 @@ public class CropImageActivity extends AppCompatActivity
               new String[] {Manifest.permission.CAMERA},
               CropImage.CAMERA_CAPTURE_PERMISSIONS_REQUEST_CODE);
         } else {
-          CropImage.startPickImageActivity(this);
+          startCropImageActivity();
         }
       } else if (CropImage.isReadExternalStoragePermissionsRequired(this, mCropImageUri)) {
         // request permissions and handle the result in onRequestPermissionsResult()
@@ -198,7 +203,11 @@ public class CropImageActivity extends AppCompatActivity
       }
 
       if (resultCode == Activity.RESULT_OK) {
-        mCropImageUri = CropImage.getPickImageResultUri(this, data);
+        if (mCameraImageUri != null) {
+          mCropImageUri = mCameraImageUri;
+        } else {
+          mCropImageUri = CropImage.getPickImageResultUri(this, data);
+        }
 
         // For API >= 23 we need to check specifically that we have permissions to read external
         // storage.
@@ -233,7 +242,22 @@ public class CropImageActivity extends AppCompatActivity
     if (requestCode == CropImage.CAMERA_CAPTURE_PERMISSIONS_REQUEST_CODE) {
       // Irrespective of whether camera permission was given or not, we show the picker
       // The picker will not add the camera intent if permission is not available
-      CropImage.startPickImageActivity(this);
+      startCropImageActivity();
+    }
+  }
+
+  private void startCropImageActivity() {
+    IntentType intentType = IntentType.fromOrdinal(mOptions.intentTypeOrdinal);
+    switch (intentType) {
+      case PickImage:
+        CropImage.startPickImageActivity(this);
+        return;
+      case OpenGallery:
+        CropImage.startOpenGalleryActivity(this);
+        return;
+      case TakePicture:
+        mCameraImageUri = getOutPutFileUri(this);
+        CropImage.startTakePictureActivity(this, mCameraImageUri);
     }
   }
 
@@ -345,6 +369,27 @@ public class CropImageActivity extends AppCompatActivity
         }
       }
     }
+  }
+
+  private static File createOutputFileIfNeeded(Context context, String outputFileName) {
+    File outputFile = new File(context.getFilesDir(), String.format("images/%s", outputFileName));
+    if (!outputFile.exists()) {
+      try {
+        //noinspection ResultOfMethodCallIgnored,ConstantConditions
+        outputFile.getParentFile().mkdirs();
+        //noinspection ResultOfMethodCallIgnored
+        outputFile.createNewFile();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+    return outputFile;
+  }
+
+  private Uri getOutPutFileUri(Context context) {
+    String outputFileName = "cameraImage.jpeg";
+    File outPutFile = createOutputFileIfNeeded(this, outputFileName);
+    return FileProvider.getUriForFile(this, String.format("%s.provider", context.getPackageName()), outPutFile);
   }
   // endregion
 }

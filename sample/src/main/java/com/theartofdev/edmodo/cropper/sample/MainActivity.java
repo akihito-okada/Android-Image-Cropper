@@ -112,21 +112,6 @@ public class MainActivity extends AppCompatActivity {
     return super.onOptionsItemSelected(item);
   }
 
-  private static File createOutputFileIfNeeded(Context context, String outputFileName) {
-    File outputFile = new File(context.getFilesDir(), String.format("images/%s", outputFileName));
-    if (!outputFile.exists()) {
-      try {
-        //noinspection ResultOfMethodCallIgnored,ConstantConditions
-        outputFile.getParentFile().mkdirs();
-        //noinspection ResultOfMethodCallIgnored
-        outputFile.createNewFile();
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    }
-    return outputFile;
-  }
-
   @Override
   @SuppressLint("NewApi")
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -362,6 +347,21 @@ public class MainActivity extends AppCompatActivity {
       default:
         Toast.makeText(this, "Unknown drawer option clicked", Toast.LENGTH_LONG).show();
     }
+  }
+
+  private static File createOutputFileIfNeeded(Context context, String outputFileName) {
+    File outputFile = new File(context.getFilesDir(), String.format("images/%s", outputFileName));
+    if (!outputFile.exists()) {
+      try {
+        //noinspection ResultOfMethodCallIgnored,ConstantConditions
+        outputFile.getParentFile().mkdirs();
+        //noinspection ResultOfMethodCallIgnored
+        outputFile.createNewFile();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+    return outputFile;
   }
 
   private Uri getOutPutFileUri(Context context) {
